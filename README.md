@@ -66,7 +66,7 @@ then execute it, to make sure it connects and display information
 
 ![freebox monitor](freebox_monitor.png)
 
-# Step 3: Leverage telegraf to call the script and send it to Graphite
+# Step 3: Leverage telegraf to call the script and send stats to Graphite
 
 Install telegraf on the SexiGraf appliance.
 
