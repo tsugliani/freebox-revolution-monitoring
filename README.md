@@ -39,13 +39,13 @@ Once you execute this script, you will see something similar to this:
 
 ![register](freebox_registration.png)
 
-Head to your Freebox Derver device.
+Head to your Freebox Server device.
 
 ![Freebox Server Validation](seximonitor_register.jpg)
 
 Press the `>` to authorize the app registration process.
 
-Be sure to save the token somewhere safe, you will need it to authenticate against the freebox api afterwards :)
+Be sure to save the `freebox_app_token` and `track_id` somewhere safe, you will need them to authenticate later on.
 
 # Step 2: Use the script to display freebox statistics information
 
