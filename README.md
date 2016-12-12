@@ -49,13 +49,13 @@ Be sure to save the token somewhere safe, you will need it to authenticate again
 
 # Step 2: Use the script to display freebox statistics information
 
-Once you have your App Token, the process to authenticate happens in 2 steps:
+Once you have your `App Token`, the process to authenticate happens in 2 steps:
 - Fetch the current `challenge` (basically a random generated string changing over time)
 - Compute a `session password` with the `challenge` and your `App Token`
 
 (This avoids sending the token over the network)
 
-Edit the freebox_monitor.py script and set your `App token/Track ID` (line 73-74)
+Edit the `freebox_monitor.py` script and set your `App token/Track ID` (line 73-74)
 
 ```python
     freebox_app_token = "CHANGE_THIS"
