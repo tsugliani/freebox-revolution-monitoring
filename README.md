@@ -5,7 +5,7 @@ Simple Freebox Revolution Monitoring with SexiGraf
 
 Based/Inspired by https://github.com/tuxtof/freebox-monitoring
 
-The newer freebox devices don't offer the hosted file with all the data information usually accessible (`http://mafreebox.freebox.fr/pub/fbx_info.txt`)
+The newer freebox devices don't offer the hosted file with all the data information usually accessible here [`http://mafreebox.freebox.fr/pub/fbx_info.txt`](http://mafreebox.freebox.fr/pub/fbx_info.txt)
 
 So this solution is leveraging the [Freebox API](http://dev.freebox.fr/sdk/os/) but just focuses on the stats I'm interested in, if you want to extend the script check all the other things available [here](http://dev.freebox.fr/sdk/os/connection/)
 
@@ -20,7 +20,7 @@ This is what I used, you can of course adapt the collector script to talk to inf
 
 # Step 1: Register an app with the Freebox device
 
-First thing to do is to register an app, to generate a specific App Token.
+First thing to do is to register an app, to generate a specific `freebox_app_token`.
 
 Use the `freebox_register_app.py` script.
 
@@ -49,20 +49,20 @@ Be sure to save the token somewhere safe, you will need it to authenticate again
 
 # Step 2: Use the script to display freebox statistics information
 
-Once you have your `App Token`, the process to authenticate happens in 2 steps:
-- Fetch the current `challenge` (basically a random generated string changing over time)
-- Compute a `session password` with the `challenge` and your `App Token`
+Once you have your `freebox_app_token`, the process to authenticate happens in 2 steps:
+- Fetch the current `challenge`. (basically a random generated string changing over time)
+- Compute a `session password` with the `challenge` and your `freebox_app_token`.
 
 (This avoids sending the token over the network)
 
-Edit the `freebox_monitor.py` script and set your `App token/Track ID` (line 73-74)
+Edit the `freebox_monitor.py` script and set your `freebox_app_token` and `track_id` (line 73-74)
 
 ```python
     freebox_app_token = "CHANGE_THIS"
     track_id = "CHANGE_THIS"
 ```
 
-then execute it, to make sure it connects and display information
+Then execute it, to make sure it connects and displays information.
 
 ![freebox monitor](freebox_monitor.png)
 
@@ -75,13 +75,13 @@ wget https://dl.influxdata.com/telegraf/releases/telegraf_1.0.1_amd64.deb
 dpkg -i telegraf_1.0.1_amd64.deb 
 ```
 
-Generate a config file for our plugins `exec` and `graphite`
+Generate a config file for our plugins `exec` and `graphite`.
 
 ```console
 telegraf --input-filter exec --output-filter graphite config > /etc/telegraf/telegraf.conf
 ```
 
-You can then check & edit the configuration file to make it look as follows:
+Check & edit the configuration file to make it look as follows:
 
 ```ini
 ###############################################################################
@@ -121,7 +121,7 @@ You can then check & edit the configuration file to make it look as follows:
   data_format = "graphite"
 ```
 
-Be sure to copy your modified `freebox_monitor.py` script to `/usr/local/freebox-revolution-monitoring/`
+Copy your modified `freebox_monitor.py` script to `/usr/local/freebox-revolution-monitoring/`
 
 Relaunch telegraf and check the logs
 
@@ -141,8 +141,10 @@ root@sexigraf:~# tail -f /var/log/telegraf/telegraf.log
 2016/12/11 18:27:20 Output [graphite] wrote batch of 7 metrics in 177.338µs
 ```
 
-If the output is similar to this, you should be good to go and build your dashboards in SexiGraf.
+If the output is similar to this, you should be good to go and build your own dashboards in SexiGraf.
+
 Here is a 2 day view of the download/upload stats.
 
 ![dashboard 2days](freebox_2days.png)
 
+Enjoy !
