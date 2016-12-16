@@ -11,8 +11,13 @@ import json
 import hmac
 import time
 import argparse
-import ConfigParser
 import sys
+
+if sys.version_info >= (3,0):
+    import configparser as configp
+else:
+    import ConfigParser as configp
+
 
 from hashlib import sha1
 import requests
@@ -123,7 +128,10 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys):
     challenge = resp['result']['challenge']
 
     # Generate session password
-    h = hmac.new(creds['app_token'], challenge, sha1)
+    if sys.version_info >= (3, 0):
+        h = hmac.new(bytearray(creds['app_token'], 'ASCII'), bytearray(challenge, 'ASCII'), sha1)
+    else:
+        h = hmac.new(creds['app_token'], challenge, sha1)
     password = h.hexdigest()
 
     # Fetch session_token
@@ -252,13 +260,13 @@ def get_auth():
     script_dir = os.path.dirname(os.path.realpath(__file__))
     cfg_file = os.path.join(script_dir, ".credentials")
 
-    f = ConfigParser.RawConfigParser()
+    f = configp.RawConfigParser()
     f.read(cfg_file)
 
     try:
         _ = f.get("general", "track_id")
         _ = f.get("general", "app_token")
-    except ConfigParser.NoSectionError as err:
+    except configp.NoSectionError as err:
         print("Config is invalid, auth not done.")
         return None
 
@@ -269,7 +277,7 @@ def get_auth():
 def write_auth(auth_infos):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     cfg_file = os.path.join(script_dir, ".credentials")
-    f = ConfigParser.RawConfigParser()
+    f = configp.RawConfigParser()
     f.add_section("general")
     f.set("general", "track_id", auth_infos['track_id'])
     f.set("general", "app_token", auth_infos["app_token"])
