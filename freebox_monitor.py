@@ -97,6 +97,7 @@ def get_and_print_metrics(creds):
     # Fetch connection stats
     jsonRaw = get_connection_stats(headers)
 
+    # Generic datas, same for FFTH or xDSL
     myData['bytes_down'] = jsonRaw['result']['bytes_down']
     myData['bytes_up'] = jsonRaw['result']['bytes_up']
     myData['rate_down'] = jsonRaw['result']['rate_down']
@@ -106,11 +107,22 @@ def get_and_print_metrics(creds):
     else:
         myData['state'] = 0
 
-    # Fetch ftth signal stats
-    jsonRaw = get_ftth_status(headers)
+    # ffth for FFTH (default)
+    # xdsl for xDSL
+    connection_media = jsonRaw['result']['media']
 
-    myData['sfp_pwr_rx'] = jsonRaw['result']['sfp_pwr_rx']
-    myData['sfp_pwr_tx'] = jsonRaw['result']['sfp_pwr_tx']
+    ###
+    # FFTH specific
+    if connection_media == "ffth":
+        jsonRaw = get_ftth_status(headers)
+
+        myData['sfp_pwr_rx'] = jsonRaw['result']['sfp_pwr_rx']
+        myData['sfp_pwr_tx'] = jsonRaw['result']['sfp_pwr_tx']
+
+    ###
+    # xDSL specific
+    if connection_media == "xdsl":
+        pass
 
     # Prepping Graphite Data format
     timestamp = int(time.time())
@@ -121,8 +133,11 @@ def get_and_print_metrics(creds):
     print("freebox.rate_down %s %d" % (myData['rate_down'], timestamp))
     print("freebox.rate_up %s %d" % (myData['rate_up'], timestamp))
     print("freebox.state %s %d" % (myData['state'], timestamp))
-    print("freebox.sfp_pwr_rx %s %d" % (myData['sfp_pwr_rx'], timestamp))
-    print("freebox.sfp_pwr_tx %s %d" % (myData['sfp_pwr_tx'], timestamp))
+    if connection_media == "ffth":
+        print("freebox.sfp_pwr_rx %s %d" % (myData['sfp_pwr_rx'], timestamp))
+        print("freebox.sfp_pwr_tx %s %d" % (myData['sfp_pwr_tx'], timestamp))
+    if connection_media == "xdsl":
+        pass
 
 
 def get_auth():
