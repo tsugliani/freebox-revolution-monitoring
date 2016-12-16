@@ -111,8 +111,13 @@ def get_and_print_metrics(creds):
     # Generic datas, same for FFTH or xDSL
     myData['bytes_down'] = jsonRaw['result']['bytes_down']
     myData['bytes_up'] = jsonRaw['result']['bytes_up']
+
     myData['rate_down'] = jsonRaw['result']['rate_down']
     myData['rate_up'] = jsonRaw['result']['rate_up']
+
+    myData['bandwidth_down'] = jsonRaw['result']['bandwidth_down']
+    myData['bandwidth_up'] = jsonRaw['result']['bandwidth_up']
+
     if jsonRaw['result']['state'] == "up":
         myData['state'] = 1
     else:
