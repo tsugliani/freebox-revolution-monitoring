@@ -18,10 +18,11 @@ from hashlib import sha1
 import requests
 
 VERSION = "0.4.3"
+ENDPOINT = "http://mafreebox.freebox.fr/api/v3"
 
 
 def get_challenge(freebox_app_id):
-    api_url = 'http://mafreebox.freebox.fr/api/v3/login/authorize/%s' % freebox_app_id
+    api_url = '%s/login/authorize/%s' % (ENDPOINT, freebox_app_id)
 
     r = requests.get(api_url)
 
@@ -32,7 +33,7 @@ def get_challenge(freebox_app_id):
 
 
 def open_session(password, freebox_app_id):
-    api_url = 'http://mafreebox.freebox.fr/api/v3/login/session/'
+    api_url = '%s/login/session/' % ENDPOINT
 
     app_info = {
         'app_id': freebox_app_id,
@@ -49,7 +50,7 @@ def open_session(password, freebox_app_id):
 
 
 def get_connection_stats(headers):
-    api_url = 'http://mafreebox.freebox.fr/api/v3/connection/'
+    api_url = '%s/connection/' % ENDPOINT
 
     r = requests.get(api_url, headers=headers)
 
@@ -60,7 +61,7 @@ def get_connection_stats(headers):
 
 
 def get_ftth_status(headers):
-    api_url = 'http://mafreebox.freebox.fr/api/v3/connection/ftth/'
+    api_url = '%s/connection/ftth/' % ENDPOINT
 
     r = requests.get(api_url, headers=headers)
 
@@ -70,17 +71,15 @@ def get_ftth_status(headers):
         print('Failed request: %s\n' % r.text)
 
 
-def get_and_print_metrics():
+def get_and_print_metrics(creds):
     freebox_app_id = "fr.freebox.seximonitor"
-    freebox_app_token = "CHANGE_THIS"
-    track_id = "CHANGE_THIS"
 
     # Fetch challenge
-    resp = get_challenge(track_id)
+    resp = get_challenge(creds['track_id'])
     challenge = resp['result']['challenge']
 
     # Generate session password
-    h = hmac.new(freebox_app_token, challenge, sha1)
+    h = hmac.new(creds['app_token'], challenge, sha1)
     password = h.hexdigest()
 
     # Fetch session_token
@@ -171,7 +170,7 @@ def do_register(creds):
     }
     json_payload = json.dumps(app_info)
 
-    r = requests.post('http://mafreebox.freebox.fr/api/v3/login/authorize/', headers=headers, data=json_payload)
+    r = requests.post('%s/login/authorize/' % ENDPOINT, headers=headers, data=json_payload)
     register_infos = None
 
     if r.status_code == 200:
@@ -207,4 +206,4 @@ if __name__ == '__main__':
     elif args.status:
         register_status(auth)
     else:
-        get_and_print_metrics()
+        get_and_print_metrics(auth)
