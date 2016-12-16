@@ -22,7 +22,7 @@ This is what I used, you can of course adapt the collector script to talk to inf
 
 First thing to do is to register an app, to generate a specific `freebox_app_token`.
 
-Use the `freebox_register_app.py` script.
+Run `python freebox_monitoring.py --register` to do that.
 
 *PS: You can modify the app name/versions etc as shown below (Optional)*
 
@@ -45,7 +45,7 @@ Head to your Freebox Server device.
 
 Press the `>` to authorize the app registration process.
 
-Be sure to save the `freebox_app_token` and `track_id` somewhere safe, you will need them to authenticate later on.
+If you need to re-auth you can delete the authorization credentials by removing the file `.credentials` in the directory where `freebox_monitor.py` is.
 
 # Step 2: Use the script to display freebox statistics information
 
@@ -54,13 +54,6 @@ Once you have your `freebox_app_token`, the process to authenticate happens in 2
 - Compute a `session password` with the `challenge` and your `freebox_app_token`.
 
 (This avoids sending the token over the network)
-
-Edit the `freebox_monitor.py` script and set your `freebox_app_token` and `track_id` (line 73-74)
-
-```python
-    freebox_app_token = "CHANGE_THIS"
-    track_id = "CHANGE_THIS"
-```
 
 Then execute it, to make sure it connects and displays information.
 
