@@ -109,13 +109,13 @@ def get_and_print_metrics(creds):
     jsonRaw = get_connection_stats(headers)
 
     # Generic datas, same for FFTH or xDSL
-    myData['bytes_down'] = jsonRaw['result']['bytes_down']
+    myData['bytes_down'] = jsonRaw['result']['bytes_down']  # total in bytes since last connection
     myData['bytes_up'] = jsonRaw['result']['bytes_up']
 
-    myData['rate_down'] = jsonRaw['result']['rate_down']
+    myData['rate_down'] = jsonRaw['result']['rate_down']  # current rate in byte/s
     myData['rate_up'] = jsonRaw['result']['rate_up']
 
-    myData['bandwidth_down'] = jsonRaw['result']['bandwidth_down']
+    myData['bandwidth_down'] = jsonRaw['result']['bandwidth_down']  # available bw in bit/s
     myData['bandwidth_up'] = jsonRaw['result']['bandwidth_up']
 
     if jsonRaw['result']['state'] == "up":
@@ -132,7 +132,7 @@ def get_and_print_metrics(creds):
     if connection_media == "ffth":
         jsonRaw = get_ftth_status(headers)
 
-        myData['sfp_pwr_rx'] = jsonRaw['result']['sfp_pwr_rx']
+        myData['sfp_pwr_rx'] = jsonRaw['result']['sfp_pwr_rx']  # scaled by 100 (in dBm)
         myData['sfp_pwr_tx'] = jsonRaw['result']['sfp_pwr_tx']
 
     ###
@@ -140,20 +140,20 @@ def get_and_print_metrics(creds):
     if connection_media == "xdsl":
         jsonRaw = get_xdsl_status(headers)
 
-        myData['uptime'] = jsonRaw['result']['status']['uptime']
+        myData['uptime'] = jsonRaw['result']['status']['uptime']  # in seconds
         
-        myData['down_es'] = jsonRaw['result']['down']['es']
-        myData['down_attn'] = jsonRaw['result']['down']['attn']
-        myData['down_snr'] = jsonRaw['result']['down']['snr']
-        myData['down_rate'] = jsonRaw['result']['down']['rate']
-        myData['down_hec'] = jsonRaw['result']['down']['hec']
-        myData['down_crc'] = jsonRaw['result']['down']['crc']
-        myData['down_rxmt_uncorr'] = jsonRaw['result']['down']['rxmt_uncorr']
-        myData['down_rxmt_corr'] = jsonRaw['result']['down']['rxmt_corr']
-        myData['down_ses'] = jsonRaw['result']['down']['ses']
-        myData['down_fec'] = jsonRaw['result']['down']['fec']
-        myData['down_maxrate'] = jsonRaw['result']['down']['maxrate']
-        myData['down_rxmt'] = jsonRaw['result']['down']['rxmt']
+        myData['down_es'] = jsonRaw['result']['down']['es']  # increment
+        myData['down_attn'] = jsonRaw['result']['down']['attn']  # in dB
+        myData['down_snr'] = jsonRaw['result']['down']['snr']  # in dB
+        myData['down_rate'] = jsonRaw['result']['down']['rate']  # ATM rate in kbit/s
+        myData['down_hec'] = jsonRaw['result']['down']['hec']  # increment
+        myData['down_crc'] = jsonRaw['result']['down']['crc']  # increment
+        myData['down_ses'] = jsonRaw['result']['down']['ses']  # increment
+        myData['down_fec'] = jsonRaw['result']['down']['fec']  # increment
+        myData['down_maxrate'] = jsonRaw['result']['down']['maxrate']  # ATM max rate in kbit/s
+        myData['down_rtx_tx'] = jsonRaw['result']['down']['rtx_tx']  # G.INP on/off
+        myData['down_rtx_c'] = jsonRaw['result']['down']['rtx_c']  # G.INP corrected
+        myData['down_rtx_uc'] = jsonRaw['result']['down']['rtx_uc']  # G.INP uncorrected
 
         myData['up_es'] = jsonRaw['result']['up']['es']
         myData['up_attn'] = jsonRaw['result']['up']['attn']
@@ -161,12 +161,12 @@ def get_and_print_metrics(creds):
         myData['up_rate'] = jsonRaw['result']['up']['rate']
         myData['up_hec'] = jsonRaw['result']['up']['hec']
         myData['up_crc'] = jsonRaw['result']['up']['crc']
-        myData['up_rxmt_uncorr'] = jsonRaw['result']['up']['rxmt_uncorr']
-        myData['up_rxmt_corr'] = jsonRaw['result']['up']['rxmt_corr']
         myData['up_ses'] = jsonRaw['result']['up']['ses']
         myData['up_fec'] = jsonRaw['result']['up']['fec']
         myData['up_maxrate'] = jsonRaw['result']['up']['maxrate']
-        myData['up_rxmt'] = jsonRaw['result']['up']['rxmt']
+        myData['up_rtx_tx'] = jsonRaw['result']['up']['rtx_tx']  # G.INP on/off
+        myData['up_rtx_c'] = jsonRaw['result']['up']['rtx_c']  # G.INP corrected
+        myData['up_rtx_uc'] = jsonRaw['result']['up']['rtx_uc']  # G.INP uncorrected
 
         
 
