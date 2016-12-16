@@ -151,43 +151,43 @@ def get_and_print_metrics(creds):
     if connection_media == "xdsl":
         jsonRaw = get_xdsl_status(headers)
 
-        myData['uptime'] = jsonRaw['result']['status']['uptime']  # in seconds
+        myData['xdsl_uptime'] = jsonRaw['result']['status']['uptime']  # in seconds
         
-        myData['down_es'] = jsonRaw['result']['down']['es']  # increment
-        myData['down_attn'] = jsonRaw['result']['down']['attn']  # in dB
-        myData['down_snr'] = jsonRaw['result']['down']['snr']  # in dB
-        myData['down_rate'] = jsonRaw['result']['down']['rate']  # ATM rate in kbit/s
-        myData['down_hec'] = jsonRaw['result']['down']['hec']  # increment
-        myData['down_crc'] = jsonRaw['result']['down']['crc']  # increment
-        myData['down_ses'] = jsonRaw['result']['down']['ses']  # increment
-        myData['down_fec'] = jsonRaw['result']['down']['fec']  # increment
-        myData['down_maxrate'] = jsonRaw['result']['down']['maxrate']  # ATM max rate in kbit/s
-        myData['down_rtx_tx'] = jsonRaw['result']['down']['rtx_tx']  # G.INP on/off
-        myData['down_rtx_c'] = jsonRaw['result']['down']['rtx_c']  # G.INP corrected
-        myData['down_rtx_uc'] = jsonRaw['result']['down']['rtx_uc']  # G.INP uncorrected
+        myData['xdsl_down_es'] = jsonRaw['result']['down']['es']  # increment
+        myData['xdsl_down_attn'] = jsonRaw['result']['down']['attn']  # in dB
+        myData['xdsl_down_snr'] = jsonRaw['result']['down']['snr']  # in dB
+        myData['xdsl_down_rate'] = jsonRaw['result']['down']['rate']  # ATM rate in kbit/s
+        myData['xdsl_down_hec'] = jsonRaw['result']['down']['hec']  # increment
+        myData['xdsl_down_crc'] = jsonRaw['result']['down']['crc']  # increment
+        myData['xdsl_down_ses'] = jsonRaw['result']['down']['ses']  # increment
+        myData['xdsl_down_fec'] = jsonRaw['result']['down']['fec']  # increment
+        myData['xdsl_down_maxrate'] = jsonRaw['result']['down']['maxrate']  # ATM max rate in kbit/s
+        myData['xdsl_down_rtx_tx'] = jsonRaw['result']['down']['rtx_tx']  # G.INP on/off
+        myData['xdsl_down_rtx_c'] = jsonRaw['result']['down']['rtx_c']  # G.INP corrected
+        myData['xdsl_down_rtx_uc'] = jsonRaw['result']['down']['rtx_uc']  # G.INP uncorrected
 
-        myData['up_es'] = jsonRaw['result']['up']['es']
-        myData['up_attn'] = jsonRaw['result']['up']['attn']
-        myData['up_snr'] = jsonRaw['result']['up']['snr']
-        myData['up_rate'] = jsonRaw['result']['up']['rate']
-        myData['up_hec'] = jsonRaw['result']['up']['hec']
-        myData['up_crc'] = jsonRaw['result']['up']['crc']
-        myData['up_ses'] = jsonRaw['result']['up']['ses']
-        myData['up_fec'] = jsonRaw['result']['up']['fec']
-        myData['up_maxrate'] = jsonRaw['result']['up']['maxrate']
-        myData['up_rtx_tx'] = jsonRaw['result']['up']['rtx_tx']  # G.INP on/off
-        myData['up_rtx_c'] = jsonRaw['result']['up']['rtx_c']  # G.INP corrected
-        myData['up_rtx_uc'] = jsonRaw['result']['up']['rtx_uc']  # G.INP uncorrected
+        myData['xdsl_up_es'] = jsonRaw['result']['up']['es']
+        myData['xdsl_up_attn'] = jsonRaw['result']['up']['attn']
+        myData['xdsl_up_snr'] = jsonRaw['result']['up']['snr']
+        myData['xdsl_up_rate'] = jsonRaw['result']['up']['rate']
+        myData['xdsl_up_hec'] = jsonRaw['result']['up']['hec']
+        myData['xdsl_up_crc'] = jsonRaw['result']['up']['crc']
+        myData['xdsl_up_ses'] = jsonRaw['result']['up']['ses']
+        myData['xdsl_up_fec'] = jsonRaw['result']['up']['fec']
+        myData['xdsl_up_maxrate'] = jsonRaw['result']['up']['maxrate']
+        myData['xdsl_up_rtx_tx'] = jsonRaw['result']['up']['rtx_tx']  # G.INP on/off
+        myData['xdsl_up_rtx_c'] = jsonRaw['result']['up']['rtx_c']  # G.INP corrected
+        myData['xdsl_up_rtx_uc'] = jsonRaw['result']['up']['rtx_uc']  # G.INP uncorrected
 
 
     ##
     # General infos
     sysJsonRaw = get_system_config(headers)
-    myData['fan_rpm'] = sysJsonRaw['result']['fan_rpm']  # rpm
-    myData['temp_sw'] = sysJsonRaw['result']['temp_sw']  # Temp Switch, degree Celcius
-    myData['box_uptime'] = sysJsonRaw['result']['uptime_val']  # Uptime, in seconds
-    myData['temp_cpub'] = sysJsonRaw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
-    myData['temp_cpum'] = sysJsonRaw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
+    myData['sys_fan_rpm'] = sysJsonRaw['result']['fan_rpm']  # rpm
+    myData['sys_temp_sw'] = sysJsonRaw['result']['temp_sw']  # Temp Switch, degree Celcius
+    myData['sys_uptime'] = sysJsonRaw['result']['uptime_val']  # Uptime, in seconds
+    myData['sys_temp_cpub'] = sysJsonRaw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
+    myData['sys_temp_cpum'] = sysJsonRaw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
 
     # Prepping Graphite Data format
     timestamp = int(time.time())
