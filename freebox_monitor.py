@@ -71,6 +71,17 @@ def get_ftth_status(headers):
         print('Failed request: %s\n' % r.text)
 
 
+def get_xdsl_status(headers):
+    api_url = '%s/connection/xdsl/' % ENDPOINT
+
+    r = requests.get(api_url, headers=headers)
+
+    if r.status_code == 200:
+        return r.json()
+    else:
+        print('Failed request: %s\n' % r.text)
+
+
 def get_and_print_metrics(creds):
     freebox_app_id = "fr.freebox.seximonitor"
 
@@ -122,22 +133,44 @@ def get_and_print_metrics(creds):
     ###
     # xDSL specific
     if connection_media == "xdsl":
-        pass
+        jsonRaw = get_xdsl_status(headers)
+
+        myData['uptime'] = jsonRaw['result']['status']['uptime']
+        
+        myData['down_es'] = jsonRaw['result']['down']['es']
+        myData['down_attn'] = jsonRaw['result']['down']['attn']
+        myData['down_snr'] = jsonRaw['result']['down']['snr']
+        myData['down_rate'] = jsonRaw['result']['down']['rate']
+        myData['down_hec'] = jsonRaw['result']['down']['hec']
+        myData['down_crc'] = jsonRaw['result']['down']['crc']
+        myData['down_rxmt_uncorr'] = jsonRaw['result']['down']['rxmt_uncorr']
+        myData['down_rxmt_corr'] = jsonRaw['result']['down']['rxmt_corr']
+        myData['down_ses'] = jsonRaw['result']['down']['ses']
+        myData['down_fec'] = jsonRaw['result']['down']['fec']
+        myData['down_maxrate'] = jsonRaw['result']['down']['maxrate']
+        myData['down_rxmt'] = jsonRaw['result']['down']['rxmt']
+
+        myData['up_es'] = jsonRaw['result']['up']['es']
+        myData['up_attn'] = jsonRaw['result']['up']['attn']
+        myData['up_snr'] = jsonRaw['result']['up']['snr']
+        myData['up_rate'] = jsonRaw['result']['up']['rate']
+        myData['up_hec'] = jsonRaw['result']['up']['hec']
+        myData['up_crc'] = jsonRaw['result']['up']['crc']
+        myData['up_rxmt_uncorr'] = jsonRaw['result']['up']['rxmt_uncorr']
+        myData['up_rxmt_corr'] = jsonRaw['result']['up']['rxmt_corr']
+        myData['up_ses'] = jsonRaw['result']['up']['ses']
+        myData['up_fec'] = jsonRaw['result']['up']['fec']
+        myData['up_maxrate'] = jsonRaw['result']['up']['maxrate']
+        myData['up_rxmt'] = jsonRaw['result']['up']['rxmt']
+
+        
 
     # Prepping Graphite Data format
     timestamp = int(time.time())
 
     # Output the information
-    print("freebox.bytes_down %s %d" % (myData['bytes_down'], timestamp))
-    print("freebox.bytes_up %s %d" % (myData['bytes_up'], timestamp))
-    print("freebox.rate_down %s %d" % (myData['rate_down'], timestamp))
-    print("freebox.rate_up %s %d" % (myData['rate_up'], timestamp))
-    print("freebox.state %s %d" % (myData['state'], timestamp))
-    if connection_media == "ffth":
-        print("freebox.sfp_pwr_rx %s %d" % (myData['sfp_pwr_rx'], timestamp))
-        print("freebox.sfp_pwr_tx %s %d" % (myData['sfp_pwr_tx'], timestamp))
-    if connection_media == "xdsl":
-        pass
+    for i in myData:
+        print("freebox.%s %s %d" % (i, myData[i], timestamp))
 
 
 def get_auth():
