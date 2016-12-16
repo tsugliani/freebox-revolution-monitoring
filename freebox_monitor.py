@@ -93,6 +93,28 @@ def get_system_config(headers):
         print('Failed request: %s\n' % r.text)
 
 
+def get_switch_status(headers):
+    api_url = '%s/switch/status/' % ENDPOINT
+
+    r = requests.get(api_url, headers=headers)
+
+    if r.status_code == 200:
+        return r.json()
+    else:
+        print('Failed request: %s\n' % r.text)
+
+
+def get_switch_port_stats(headers, port):
+    api_url = '%s/switch/port/%s/stats' % (ENDPOINT, port)
+
+    r = requests.get(api_url, headers=headers)
+
+    if r.status_code == 200:
+        return r.json()
+    else:
+        print('Failed request: %s\n' % r.text)
+
+
 def get_and_print_metrics(creds):
     freebox_app_id = "fr.freebox.seximonitor"
 
@@ -188,6 +210,30 @@ def get_and_print_metrics(creds):
     myData['sys_uptime'] = sysJsonRaw['result']['uptime_val']  # Uptime, in seconds
     myData['sys_temp_cpub'] = sysJsonRaw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
     myData['sys_temp_cpum'] = sysJsonRaw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
+
+
+    ##
+    # Switch status
+    switchJsonRaw = get_switch_status(headers)
+    for i in switchJsonRaw['result']:
+        # 0 down, 1 up
+        myData['switch_%s_link' % i['id']] = 0 if i['link'] == "down" else 1
+        # 0 auto, 1 10Base-T, 2 100Base-T, 3 1000Base-T
+        # In fact the duplex is appended like 10BaseT-HD, 1000BaseT-FD, 1000BaseT-FD
+        # So juse is an "in" because duplex isn't really usefull
+        if "10BaseT" in i['mode']:
+            myData['switch_%s_mode' % i['id']] = 1
+        elif "100BaseT" in i['mode']:
+            myData['switch_%s_mode' % i['id']] = 2
+        elif "1000BaseT" in i['mode']:
+            myData['switch_%s_mode' % i['id']] = 3
+        else:
+            myData['switch_%s_mode' % i['id']] = 0  # auto
+
+    for i in [1,2,3,4]:
+        switchPortStats = get_switch_port_stats(headers, i)
+        myData['switch_%s_rx_bytes_rate' % i] = switchPortStats['result']['rx_bytes_rate']  # bytes/s (?)
+        myData['switch_%s_tx_bytes_rate' % i] = switchPortStats['result']['tx_bytes_rate']
 
     # Prepping Graphite Data format
     timestamp = int(time.time())
