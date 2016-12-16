@@ -82,6 +82,17 @@ def get_xdsl_status(headers):
         print('Failed request: %s\n' % r.text)
 
 
+def get_system_config(headers):
+    api_url = '%s/system/' % ENDPOINT
+
+    r = requests.get(api_url, headers=headers)
+
+    if r.status_code == 200:
+        return r.json()
+    else:
+        print('Failed request: %s\n' % r.text)
+
+
 def get_and_print_metrics(creds):
     freebox_app_id = "fr.freebox.seximonitor"
 
@@ -168,7 +179,15 @@ def get_and_print_metrics(creds):
         myData['up_rtx_c'] = jsonRaw['result']['up']['rtx_c']  # G.INP corrected
         myData['up_rtx_uc'] = jsonRaw['result']['up']['rtx_uc']  # G.INP uncorrected
 
-        
+
+    ##
+    # General infos
+    sysJsonRaw = get_system_config(headers)
+    myData['fan_rpm'] = sysJsonRaw['result']['fan_rpm']  # rpm
+    myData['temp_sw'] = sysJsonRaw['result']['temp_sw']  # Temp Switch, degree Celcius
+    myData['box_uptime'] = sysJsonRaw['result']['uptime_val']  # Uptime, in seconds
+    myData['temp_cpub'] = sysJsonRaw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
+    myData['temp_cpum'] = sysJsonRaw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
 
     # Prepping Graphite Data format
     timestamp = int(time.time())
