@@ -45,6 +45,10 @@ Head to your Freebox Server device.
 
 Press the `>` to authorize the app registration process.
 
+You can check the saved tokens with `python freebox_monitor.py --register-status`:
+
+![register-status](freebox_registration_status.png)
+
 If you need to re-auth you can delete the authorization credentials by removing the file `.credentials` in the directory where `freebox_monitor.py` is.
 
 # Step 2: Use the script to display freebox statistics information
@@ -59,7 +63,35 @@ Then execute it, to make sure it connects and displays information.
 
 ![freebox monitor](freebox_monitor.png)
 
-# Step 3: Leverage telegraf to call the script and send stats to Graphite
+# Step 3: Stats to get and show
+
+By default it auto adapts beetween FFTH and xDSL, by using a switch indicated (`python freebox_monitor.py 'indicated switch'`) you can get the listed stats.
+
+  * FFTH and xDSL (no switch, default)
+    * bytes up/down
+    * rate up/down
+    * bandwidth up/down
+    * connection state
+    
+  * FTTH
+    * sfp power rx/tx
+  
+  * xDSL (each for up, and down, except uptime)
+    * uptime
+    * errors: es, hec, crc, ses, fec
+    * rate, attenuation, signal noise ratio, max rate
+    * G.INP status, corrected and uncorrected
+    
+  * System infos (-H switch)
+    * Fan RPM, temp SW, CPU B, CPU M, Box uptime
+    
+  * Switch status (-S switch)
+    * for each switch port: link mode
+    
+  * Switch ports status (-P switch)
+    * for each switch port: rx/tx bytes rate
+
+# Step 4: Leverage telegraf to call the script and send stats to Graphite
 
 Install telegraf on the SexiGraf appliance.
 
