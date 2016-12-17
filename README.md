@@ -172,4 +172,9 @@ Here is a 2 day view of the download/upload stats.
 
 ![dashboard 2days](freebox_2days.png)
 
+Example of the xDSL graphs
+
+![xdsl_dash_12h_1](freebox_xdsl_12h_1.png)
+![xdsl_dash_12h_2](freebox_xdsl_12h_2.png)
+
 Enjoy !
