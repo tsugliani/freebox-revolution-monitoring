@@ -180,7 +180,24 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys):
         json_raw = get_xdsl_status(headers)
 
         my_data['xdsl_uptime'] = json_raw['result']['status']['uptime']  # in seconds
-        
+
+        if json_raw['result']['status']['status'] == "down":  # unsynchronized
+            my_data['xdsl_status'] = 0
+        elif json_raw['result']['status']['status'] == "training":  # synchronizing step 1/4
+            my_data['xdsl_status'] = 1
+        elif json_raw['result']['status']['status'] == "started":  # synchronizing step 2/4
+            my_data['xdsl_status'] = 2
+        elif json_raw['result']['status']['status'] == "chan_analysis":  # synchronizing step 3/4
+            my_data['xdsl_status'] = 3
+        elif json_raw['result']['status']['status'] == "msg_exchange":  # synchronizing step 4/4
+            my_data['xdsl_status'] = 4
+        elif json_raw['result']['status']['status'] == "showtime":  # ready
+            my_data['xdsl_status'] = 5
+        elif json_raw['result']['status']['status'] == "disabled":  # disabled
+            my_data['xdsl_status'] = 6
+        else:  # unknown
+            my_data['xdsl_status'] = 999
+
         my_data['xdsl_down_es'] = json_raw['result']['down']['es']  # increment
         my_data['xdsl_down_attn'] = json_raw['result']['down']['attn']  # in dB
         my_data['xdsl_down_snr'] = json_raw['result']['down']['snr']  # in dB
