@@ -22,7 +22,7 @@ This is what I used, you can of course adapt the collector script to talk to inf
 
 First thing to do is to register an app, to generate a specific `freebox_app_token`.
 
-Use the `freebox_register_app.py` script.
+Run `python freebox_monitoring.py --register` to do that.
 
 *PS: You can modify the app name/versions etc as shown below (Optional)*
 
@@ -45,7 +45,11 @@ Head to your Freebox Server device.
 
 Press the `>` to authorize the app registration process.
 
-Be sure to save the `freebox_app_token` and `track_id` somewhere safe, you will need them to authenticate later on.
+You can check the saved tokens with `python freebox_monitor.py --register-status`:
+
+![register-status](freebox_registration_status.png)
+
+If you need to re-auth you can delete the authorization credentials by removing the file `.credentials` in the directory where `freebox_monitor.py` is.
 
 # Step 2: Use the script to display freebox statistics information
 
@@ -55,18 +59,39 @@ Once you have your `freebox_app_token`, the process to authenticate happens in 2
 
 (This avoids sending the token over the network)
 
-Edit the `freebox_monitor.py` script and set your `freebox_app_token` and `track_id` (line 73-74)
-
-```python
-    freebox_app_token = "CHANGE_THIS"
-    track_id = "CHANGE_THIS"
-```
-
 Then execute it, to make sure it connects and displays information.
 
 ![freebox monitor](freebox_monitor.png)
 
-# Step 3: Leverage telegraf to call the script and send stats to Graphite
+# Step 3: Stats to get and show
+
+By default it auto adapts beetween FFTH and xDSL, by using a switch indicated (`python freebox_monitor.py 'indicated switch'`) you can get the listed stats.
+
+  * FFTH and xDSL (no switch, default)
+    * bytes up/down
+    * rate up/down
+    * bandwidth up/down
+    * connection state
+    
+  * FTTH
+    * sfp power rx/tx
+  
+  * xDSL (each for up, and down, except uptime)
+    * uptime
+    * errors: es, hec, crc, ses, fec
+    * rate, attenuation, signal noise ratio, max rate
+    * G.INP status, corrected and uncorrected
+    
+  * System infos (-H switch)
+    * Fan RPM, temp SW, CPU B, CPU M, Box uptime
+    
+  * Switch status (-S switch)
+    * for each switch port: link mode
+    
+  * Switch ports status (-P switch)
+    * for each switch port: rx/tx bytes rate
+
+# Step 4: Leverage telegraf to call the script and send stats to Graphite
 
 Install telegraf on the SexiGraf appliance.
 
@@ -146,5 +171,10 @@ If the output is similar to this, you should be good to go and build your own da
 Here is a 2 day view of the download/upload stats.
 
 ![dashboard 2days](freebox_2days.png)
+
+Example of the xDSL graphs
+
+![xdsl_dash_12h_1](freebox_xdsl_12h_1.png)
+![xdsl_dash_12h_2](freebox_xdsl_12h_2.png)
 
 Enjoy !
