@@ -20,8 +20,7 @@ else:
 # Freebox API SDK / Docs: http://dev.freebox.fr/sdk/os/login/
 #
 
-VERSION = "0.4.3"
-ENDPOINT = "http://mafreebox.freebox.fr/api/v3"
+VERSION = "0.4.4"
 
 
 def get_challenge(freebox_app_id):
@@ -342,6 +341,10 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--register', action='store_true', help="Register app with Freebox API")
     parser.add_argument('-s', '--register-status', dest='status', action='store_true', help="Get register status")
 
+    parser.add_argument('-e', '--endpoint',
+                        dest='Endpoint',
+                        help="Specify endpoint name or address")
+
     parser.add_argument('-S', '--status-switch',
                         dest='status_switch',
                         action='store_true',
@@ -357,6 +360,11 @@ if __name__ == '__main__':
                         action='store_true',
                         help="Get and show system status")
     args = parser.parse_args()
+
+    if args.Endpoint is None:
+         ENDPOINT="http://mafreebox.freebox.fr/api/v3/"
+    else:
+         ENDPOINT="http://"+args.Endpoint+"/api/v3/"
 
     auth = get_auth()
 
