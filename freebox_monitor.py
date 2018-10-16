@@ -128,7 +128,7 @@ def get_switch_port_stats(headers, port):
         print('Failed request: %s\n' % r.text)
 
 
-def get_and_print_metrics(creds, s_switch, s_ports, s_sys):
+def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
     freebox_app_id = "fr.freebox.seximonitor"
 
     # Fetch challenge
@@ -153,11 +153,6 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys):
 
     # Setup hashtable for results
     my_data = {}
-
-    # Fetch internal disk stats
-    json_raw=get_internal_disk_stats(headers)
-    my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
-    my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
 
     # Fetch connection stats
     json_raw = get_connection_stats(headers)
@@ -276,6 +271,13 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys):
             my_data['switch_%s_rx_bytes_rate' % i] = switch_port_stats['result']['rx_bytes_rate']  # bytes/s (?)
             my_data['switch_%s_tx_bytes_rate' % i] = switch_port_stats['result']['tx_bytes_rate']
 
+    # Fetch internal disk stats
+    if s_disk:
+        json_raw=get_internal_disk_stats(headers)
+        my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
+        my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
+
+    # 
     # Prepping Graphite Data format
     timestamp = int(time.time())
 
@@ -360,6 +362,12 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--register', action='store_true', help="Register app with Freebox API")
     parser.add_argument('-s', '--register-status', dest='status', action='store_true', help="Get register status")
 
+    parser.add_argument('-f', '--format',
+                        dest='format',
+			metavar='format',
+			default='graphite',
+                        help="Specify output format between graphite and influxdb")
+
     parser.add_argument('-e', '--endpoint',
                         dest='Endpoint',
 			metavar='endpoint',
@@ -380,6 +388,11 @@ if __name__ == '__main__':
                         dest='status_sys',
                         action='store_true',
                         help="Get and show system status")
+
+    parser.add_argument('-D', '--internal-disk-usage',
+                        dest='disk_usage',
+                        action='store_true',
+                        help="Get and show internal disk usage")
     args = parser.parse_args()
 
 
@@ -392,4 +405,4 @@ if __name__ == '__main__':
     elif args.status:
         register_status(auth)
     else:
-        get_and_print_metrics(auth, args.status_switch, args.status_ports, args.status_sys)
+        get_and_print_metrics(auth, args.status_switch, args.status_ports, args.status_sys, args.disk_usage)
