@@ -277,13 +277,19 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
         my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
         my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
 
-    # 
-    # Prepping Graphite Data format
-    timestamp = int(time.time())
+    # Switching between outputs formats 
+    if args.format == 'influxdb':
+         # Output the information
+         for i in my_data:
+             print("freebox_%s,endpoint=%s %s" % (i, args.Endpoint, my_data[i]))
 
-    # Output the information
-    for i in my_data:
-        print("freebox.%s %s %d" % (i, my_data[i], timestamp))
+    else:
+         # Prepping Graphite Data format
+         timestamp = int(time.time())
+
+         # Output the information
+         for i in my_data:
+             print("freebox.%s %s %d" % (i, my_data[i], timestamp))
 
 
 def get_auth():
