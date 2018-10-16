@@ -51,6 +51,17 @@ def open_session(password, freebox_app_id):
         print("Failed request: %s\n" % r.text)
 
 
+def get_internal_disk_stats(headers):
+    api_url = '%s/storage/disk/1' % ENDPOINT
+
+    r = requests.get(api_url, headers=headers)
+
+    if r.status_code == 200:
+        return r.json()
+    else:
+        print("Failed request: %s\n" % r.text)
+
+
 def get_connection_stats(headers):
     api_url = '%s/connection/' % ENDPOINT
 
@@ -142,6 +153,11 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys):
 
     # Setup hashtable for results
     my_data = {}
+
+    # Fetch internal disk stats
+    json_raw=get_internal_disk_stats(headers)
+    my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
+    my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
 
     # Fetch connection stats
     json_raw = get_connection_stats(headers)
