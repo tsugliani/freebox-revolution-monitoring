@@ -276,24 +276,27 @@ def get_auth():
     f.read(cfg_file)
 
     try:
-        _ = f.get("general", "track_id")
-        _ = f.get("general", "app_token")
+        _ = f.get(args.Endpoint, "track_id")
+        _ = f.get(args.Endpoint, "app_token")
     except configp.NoSectionError:
-        print("Config is invalid, auth not done.")
-        return None
+        print("Config is not registered, auth not done.")
+	if args.register:
+             return None
+	else:
+	     exit();
 
-    return {'track_id': f.get('general', 'track_id'),
-            'app_token': f.get('general', 'app_token')}
+    return {'track_id': f.get(args.Endpoint, 'track_id'),
+            'app_token': f.get(args.Endpoint, 'app_token')}
 
 
 def write_auth(auth_infos):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     cfg_file = os.path.join(script_dir, ".credentials")
     f = configp.RawConfigParser()
-    f.add_section("general")
-    f.set("general", "track_id", auth_infos['track_id'])
-    f.set("general", "app_token", auth_infos["app_token"])
-    with open(cfg_file, "wb") as authFile:
+    f.add_section(args.Endpoint)
+    f.set(args.Endpoint, "track_id", auth_infos['track_id'])
+    f.set(args.Endpoint, "app_token", auth_infos["app_token"])
+    with open(cfg_file, "ab") as authFile:
         f.write(authFile)
 
 
@@ -343,6 +346,8 @@ if __name__ == '__main__':
 
     parser.add_argument('-e', '--endpoint',
                         dest='Endpoint',
+			metavar='endpoint',
+			default='mafreebox.freebox.fr',
                         help="Specify endpoint name or address")
 
     parser.add_argument('-S', '--status-switch',
@@ -361,10 +366,8 @@ if __name__ == '__main__':
                         help="Get and show system status")
     args = parser.parse_args()
 
-    if args.Endpoint is None:
-         ENDPOINT="http://mafreebox.freebox.fr/api/v3/"
-    else:
-         ENDPOINT="http://"+args.Endpoint+"/api/v3/"
+
+    ENDPOINT="http://"+args.Endpoint+"/api/v3/"
 
     auth = get_auth()
 
