@@ -243,6 +243,7 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
         my_data['sys_uptime'] = sys_json_raw['result']['uptime_val']  # Uptime, in seconds
         my_data['sys_temp_cpub'] = sys_json_raw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
         my_data['sys_temp_cpum'] = sys_json_raw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
+        my_data['firmware_version'] = sys_json_raw['result']['firmware_version']  # Firmware version
 
     ##
     # Switch status
@@ -276,12 +277,19 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
         json_raw=get_internal_disk_stats(headers)
         my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
         my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
+        my_data['disk_temp'] =  json_raw['result']['temp']
 
     # Switching between outputs formats 
     if args.format == 'influxdb':
+         # Prepping Graphite Data format
+         timestamp = int(time.time())* 1000000
+
          # Output the information
          for i in my_data:
-             print("freebox_%s,endpoint=%s %s" % (i, args.Endpoint, my_data[i]))
+             if type(my_data[i]) == unicode:
+                 print("freebox,endpoint=%s %s=\"%s\"" % (args.Endpoint, i, my_data[i]))
+             else:
+                 print("freebox,endpoint=%s %s=%s" % (args.Endpoint, i, my_data[i]))
 
     else:
          # Prepping Graphite Data format
