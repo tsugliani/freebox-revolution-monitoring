@@ -303,13 +303,23 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
 def get_auth():
     script_dir = os.path.dirname(os.path.realpath(__file__))
     cfg_file = os.path.join(script_dir, ".credentials")
-
+    ret_args={}
     f = configp.RawConfigParser()
     f.read(cfg_file)
 
     try:
-        _ = f.get(args.Endpoint, "track_id")
-        _ = f.get(args.Endpoint, "app_token")
+	_ = f.has_section(args.Endpoint)
+
+        ret_args.update(track_id= f.get(args.Endpoint, "track_id"))
+        ret_args.update(app_token= f.get(args.Endpoint, "app_token"))
+
+	if f.has_option(args.Endpoint, "app_id"):
+             ret_args.update(app_id= f.get(args.Endpoint, "app_id")) 
+	if f.has_option(args.Endpoint, "app_name"):
+             ret_args.update(app_id= f.get(args.Endpoint, "app_name")) 
+	if f.has_option(args.Endpoint, "device_name"):
+             ret_args.update(app_id= f.get(args.Endpoint, "device_name")) 
+	
     except configp.NoSectionError:
         print("Config is not registered, auth not done.")
 	if args.register:
@@ -317,8 +327,7 @@ def get_auth():
 	else:
 	     exit();
 
-    return {'track_id': f.get(args.Endpoint, 'track_id'),
-            'app_token': f.get(args.Endpoint, 'app_token')}
+    return ret_args
 
 
 def write_auth(auth_infos):
@@ -338,13 +347,22 @@ def do_register(creds):
             print("Already registered, exiting")
             return
 
+    if appid is None:
+      appid='fr.freebox.seximonitor'
+
+    if appname is None:
+      appname='SexiMonitor'
+
+    if devicename is None:
+      devicename='SexiServer'
+  
     print("Doing registration")
     headers = {'Content-type': 'application/json'}
     app_info = {
-        'app_id': 'fr.freebox.seximonitor',
-        'app_name': 'SexiMonitor',
+        'app_id': appid,
+        'app_name': appname,
         'app_version': VERSION,
-        'device_name': 'SexiServer'
+        'device_name': devicename
     }
     json_payload = json.dumps(app_info)
 
@@ -372,9 +390,16 @@ def register_status(creds):
 
 # Main
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-r', '--register', action='store_true', help="Register app with Freebox API")
+    parser = argparse.ArgumentParser(add_help=False)
+    #helpgroup = parser.add_argument_group()
+    parser.add_argument("-h", "--help", action="help", help="show this help message and exit")
     parser.add_argument('-s', '--register-status', dest='status', action='store_true', help="Get register status")
+
+    #registergroup = parser.add_mutually_exclusive_group()
+    parser.add_argument('-r', '--register', action='store_true', help="Register app with Freebox API")
+    parser.add_argument('-a', '--appname', dest='appname', action='store_true', help="Register with appname")
+    parser.add_argument('-i', '--appid', dest='appid', action='store_true', help="Register with appid")
+    parser.add_argument('-d', '--device-name', dest='devicename', action='store_true', help="Register with device-name")
 
     parser.add_argument('-f', '--format',
                         dest='format',
