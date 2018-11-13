@@ -191,7 +191,7 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
     # xDSL specific
     if connection_media == "xdsl":
         json_raw = get_xdsl_status(headers)
-        pprint(json_raw)
+
         my_data['xdsl_modulation'] = json_raw['result']['status']['modulation'] + " ("+json_raw['result']['status']['protocol']+")"  # in seconds
 
         my_data['xdsl_uptime'] = json_raw['result']['status']['uptime']  # in seconds
