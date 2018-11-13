@@ -191,9 +191,12 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
     # xDSL specific
     if connection_media == "xdsl":
         json_raw = get_xdsl_status(headers)
+        pprint(json_raw)
+        my_data['xdsl_modulation'] = json_raw['result']['status']['modulation'] + " ("+json_raw['result']['status']['protocol']+")"  # in seconds
 
         my_data['xdsl_uptime'] = json_raw['result']['status']['uptime']  # in seconds
 
+        my_data['xdsl_status_string'] = json_raw['result']['status']['status']
         if json_raw['result']['status']['status'] == "down":  # unsynchronized
             my_data['xdsl_status'] = 0
         elif json_raw['result']['status']['status'] == "training":  # synchronizing step 1/4
