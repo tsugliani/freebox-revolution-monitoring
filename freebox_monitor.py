@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # pylint: disable=C0103,C0111,W0621
 from __future__ import print_function
-from pprint import pprint
 
 import requests
 import os
