@@ -22,9 +22,10 @@ This is what I used, you can of course adapt the collector script to talk to inf
 
 First thing to do is to register an app, to generate a specific `freebox_app_token`.
 
-Run `python freebox_monitoring.py --register [-e endpoint] [-a "My app_name" -i "My app_id" -d "My device_name"]` to do that.
+Run `python freebox_monitoring.py --register [-e endpoint] [-a My_app_name -i My_app_id -d My_device_name]` to do that.
 
 *PS: You can modify the app name/id/device name with -a My_app_name -i My_app_id -d My_device_name (Optional)*
+
 *PS: You can specify the -e endpoint (Freebox name or address) to allow multiple endpoints (Optional)*
 
 Once you execute this script, you will see something similar to this:
