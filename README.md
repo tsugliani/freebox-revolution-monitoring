@@ -22,18 +22,10 @@ This is what I used, you can of course adapt the collector script to talk to inf
 
 First thing to do is to register an app, to generate a specific `freebox_app_token`.
 
-Run `python freebox_monitoring.py --register` to do that.
+Run `python freebox_monitoring.py --register [-e endpoint] [-a "My app_name" -i "My app_id" -d "My device_name"]` to do that.
 
-*PS: You can modify the app name/versions etc as shown below (Optional)*
-
-```python
-    app_info = {
-        'app_id': 'fr.freebox.seximonitor',
-        'app_name': 'SexiMonitor',
-        'app_version': '0.4.2',
-        'device_name': 'SexiServer'
-    }
-``` 
+*PS: You can modify the app name/id/device name with -a My_app_name -i My_app_id -d My_device_name (Optional)*
+*PS: You can specify the -e endpoint (Freebox name or address) to allow multiple endpoints (Optional)*
 
 Once you execute this script, you will see something similar to this:
 
@@ -134,7 +126,10 @@ Check & edit the configuration file to make it look as follows:
 # Read metrics from one or more commands that can output to stdout
 [[inputs.exec]]
   ## Commands array
-  command = "/usr/local/freebox-revolution-monitoring/freebox_monitor.py"
+  command = [
+     "/usr/local/freebox-revolution-monitoring/freebox_monitor.py",
+     "/usr/local/freebox-revolution-monitoring/freebox_monitor.py -e another_freebox_address"
+  ]
 
   ## Timeout for each command to complete.
   timeout = "5s"
