@@ -160,14 +160,15 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
     json_raw = get_connection_stats(headers)
 
     # Generic datas, same for FFTH or xDSL
-    my_data['bytes_down'] = json_raw['result']['bytes_down']  # total in bytes since last connection
-    my_data['bytes_up'] = json_raw['result']['bytes_up']
+    if 'result' in json_raw:
+    	my_data['bytes_down'] = json_raw['result']['bytes_down']  # total in bytes since last connection
+    	my_data['bytes_up'] = json_raw['result']['bytes_up']
 
-    my_data['rate_down'] = json_raw['result']['rate_down']  # current rate in byte/s
-    my_data['rate_up'] = json_raw['result']['rate_up']
+    	my_data['rate_down'] = json_raw['result']['rate_down']  # current rate in byte/s
+    	my_data['rate_up'] = json_raw['result']['rate_up']
 
-    my_data['bandwidth_down'] = json_raw['result']['bandwidth_down']  # available bw in bit/s
-    my_data['bandwidth_up'] = json_raw['result']['bandwidth_up']
+    	my_data['bandwidth_down'] = json_raw['result']['bandwidth_down']  # available bw in bit/s
+    	my_data['bandwidth_up'] = json_raw['result']['bandwidth_up']
 
     if json_raw['result']['state'] == "up":
         my_data['state'] = 1
@@ -183,91 +184,95 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
     if connection_media == "ffth":
         json_raw = get_ftth_status(headers)
 
-        my_data['sfp_pwr_rx'] = json_raw['result']['sfp_pwr_rx']  # scaled by 100 (in dBm)
-        my_data['sfp_pwr_tx'] = json_raw['result']['sfp_pwr_tx']
+    	if 'result' in json_raw:
+        	my_data['sfp_pwr_rx'] = json_raw['result']['sfp_pwr_rx']  # scaled by 100 (in dBm)
+	        my_data['sfp_pwr_tx'] = json_raw['result']['sfp_pwr_tx']
 
     ###
     # xDSL specific
     if connection_media == "xdsl":
         json_raw = get_xdsl_status(headers)
 
-        my_data['xdsl_modulation'] = json_raw['result']['status']['modulation'] + " ("+json_raw['result']['status']['protocol']+")"  # in seconds
+    	if 'result' in json_raw:
+        	my_data['xdsl_modulation'] = json_raw['result']['status']['modulation'] + " ("+json_raw['result']['status']['protocol']+")"  # in seconds
 
-        my_data['xdsl_uptime'] = json_raw['result']['status']['uptime']  # in seconds
+	        my_data['xdsl_uptime'] = json_raw['result']['status']['uptime']  # in seconds
 
-        my_data['xdsl_status_string'] = json_raw['result']['status']['status']
-        if json_raw['result']['status']['status'] == "down":  # unsynchronized
-            my_data['xdsl_status'] = 0
-        elif json_raw['result']['status']['status'] == "training":  # synchronizing step 1/4
-            my_data['xdsl_status'] = 1
-        elif json_raw['result']['status']['status'] == "started":  # synchronizing step 2/4
-            my_data['xdsl_status'] = 2
-        elif json_raw['result']['status']['status'] == "chan_analysis":  # synchronizing step 3/4
-            my_data['xdsl_status'] = 3
-        elif json_raw['result']['status']['status'] == "msg_exchange":  # synchronizing step 4/4
-            my_data['xdsl_status'] = 4
-        elif json_raw['result']['status']['status'] == "showtime":  # ready
-            my_data['xdsl_status'] = 5
-        elif json_raw['result']['status']['status'] == "disabled":  # disabled
-            my_data['xdsl_status'] = 6
-        else:  # unknown
-            my_data['xdsl_status'] = 999
+	        my_data['xdsl_status_string'] = json_raw['result']['status']['status']
+	        if json_raw['result']['status']['status'] == "down":  # unsynchronized
+	            my_data['xdsl_status'] = 0
+	        elif json_raw['result']['status']['status'] == "training":  # synchronizing step 1/4
+	            my_data['xdsl_status'] = 1
+	        elif json_raw['result']['status']['status'] == "started":  # synchronizing step 2/4
+	            my_data['xdsl_status'] = 2
+	        elif json_raw['result']['status']['status'] == "chan_analysis":  # synchronizing step 3/4
+	            my_data['xdsl_status'] = 3
+	        elif json_raw['result']['status']['status'] == "msg_exchange":  # synchronizing step 4/4
+	            my_data['xdsl_status'] = 4
+	        elif json_raw['result']['status']['status'] == "showtime":  # ready
+	            my_data['xdsl_status'] = 5
+	        elif json_raw['result']['status']['status'] == "disabled":  # disabled
+	            my_data['xdsl_status'] = 6
+	        else:  # unknown
+	            my_data['xdsl_status'] = 999
 
-        if 'es' in json_raw['result']['down']: my_data['xdsl_down_es'] = json_raw['result']['down']['es']  # increment
-        if 'attn' in json_raw['result']['down']: my_data['xdsl_down_attn'] = json_raw['result']['down']['attn']  # in dB
-        if 'snr' in json_raw['result']['down']: my_data['xdsl_down_snr'] = json_raw['result']['down']['snr']  # in dB
-        if 'rate' in json_raw['result']['down']: my_data['xdsl_down_rate'] = json_raw['result']['down']['rate']  # ATM rate in kbit/s
-        if 'hec' in json_raw['result']['down']: my_data['xdsl_down_hec'] = json_raw['result']['down']['hec']  # increment
-        if 'crc' in json_raw['result']['down']: my_data['xdsl_down_crc'] = json_raw['result']['down']['crc']  # increment
-        if 'ses' in json_raw['result']['down']: my_data['xdsl_down_ses'] = json_raw['result']['down']['ses']  # increment
-        if 'fec' in json_raw['result']['down']: my_data['xdsl_down_fec'] = json_raw['result']['down']['fec']  # increment
-        if 'maxrate' in json_raw['result']['down']: my_data['xdsl_down_maxrate'] = json_raw['result']['down']['maxrate']  # ATM max rate in kbit/s
-        if 'rtx_tx' in json_raw['result']['down']: my_data['xdsl_down_rtx_tx'] = json_raw['result']['down']['rtx_tx']  # G.INP on/off
-        if 'rtx_c' in json_raw['result']['down']: my_data['xdsl_down_rtx_c'] = json_raw['result']['down']['rtx_c']  # G.INP corrected
-        if 'rtx_uc' in json_raw['result']['down']: my_data['xdsl_down_rtx_uc'] = json_raw['result']['down']['rtx_uc']  # G.INP uncorrected
-
-        if 'es' in json_raw['result']['up']: my_data['xdsl_up_es'] = json_raw['result']['up']['es']
-        if 'attn' in json_raw['result']['up']: my_data['xdsl_up_attn'] = json_raw['result']['up']['attn']
-        if 'snr' in json_raw['result']['up']: my_data['xdsl_up_snr'] = json_raw['result']['up']['snr']
-        if 'rate' in json_raw['result']['up']: my_data['xdsl_up_rate'] = json_raw['result']['up']['rate']
-        if 'hec' in json_raw['result']['up']: my_data['xdsl_up_hec'] = json_raw['result']['up']['hec']
-        if 'crc' in json_raw['result']['up']: my_data['xdsl_up_crc'] = json_raw['result']['up']['crc']
-        if 'ses' in json_raw['result']['up']: my_data['xdsl_up_ses'] = json_raw['result']['up']['ses']
-        if 'fec' in json_raw['result']['up']: my_data['xdsl_up_fec'] = json_raw['result']['up']['fec']
-        if 'maxrate' in json_raw['result']['up']: my_data['xdsl_up_maxrate'] = json_raw['result']['up']['maxrate']
-        if 'rtx_tx' in json_raw['result']['up']: my_data['xdsl_up_rtx_tx'] = json_raw['result']['up']['rtx_tx']
-        if 'rtx_c' in json_raw['result']['up']: my_data['xdsl_up_rtx_c'] = json_raw['result']['up']['rtx_c']  # G.INP corrected
-        if 'rtx_uc' in json_raw['result']['up']: my_data['xdsl_up_rtx_uc'] = json_raw['result']['up']['rtx_uc']  # G.INP uncorrected
+	        if 'es' in json_raw['result']['down']: my_data['xdsl_down_es'] = json_raw['result']['down']['es']  # increment
+	        if 'attn' in json_raw['result']['down']: my_data['xdsl_down_attn'] = json_raw['result']['down']['attn']  # in dB
+	        if 'snr' in json_raw['result']['down']: my_data['xdsl_down_snr'] = json_raw['result']['down']['snr']  # in dB
+	        if 'rate' in json_raw['result']['down']: my_data['xdsl_down_rate'] = json_raw['result']['down']['rate']  # ATM rate in kbit/s
+	        if 'hec' in json_raw['result']['down']: my_data['xdsl_down_hec'] = json_raw['result']['down']['hec']  # increment
+	        if 'crc' in json_raw['result']['down']: my_data['xdsl_down_crc'] = json_raw['result']['down']['crc']  # increment
+	        if 'ses' in json_raw['result']['down']: my_data['xdsl_down_ses'] = json_raw['result']['down']['ses']  # increment
+	        if 'fec' in json_raw['result']['down']: my_data['xdsl_down_fec'] = json_raw['result']['down']['fec']  # increment
+	        if 'maxrate' in json_raw['result']['down']: my_data['xdsl_down_maxrate'] = json_raw['result']['down']['maxrate']  # ATM max rate in kbit/s
+	        if 'rtx_tx' in json_raw['result']['down']: my_data['xdsl_down_rtx_tx'] = json_raw['result']['down']['rtx_tx']  # G.INP on/off
+	        if 'rtx_c' in json_raw['result']['down']: my_data['xdsl_down_rtx_c'] = json_raw['result']['down']['rtx_c']  # G.INP corrected
+	        if 'rtx_uc' in json_raw['result']['down']: my_data['xdsl_down_rtx_uc'] = json_raw['result']['down']['rtx_uc']  # G.INP uncorrected
+	
+	        if 'es' in json_raw['result']['up']: my_data['xdsl_up_es'] = json_raw['result']['up']['es']
+	        if 'attn' in json_raw['result']['up']: my_data['xdsl_up_attn'] = json_raw['result']['up']['attn']
+	        if 'snr' in json_raw['result']['up']: my_data['xdsl_up_snr'] = json_raw['result']['up']['snr']
+	        if 'rate' in json_raw['result']['up']: my_data['xdsl_up_rate'] = json_raw['result']['up']['rate']
+	        if 'hec' in json_raw['result']['up']: my_data['xdsl_up_hec'] = json_raw['result']['up']['hec']
+	        if 'crc' in json_raw['result']['up']: my_data['xdsl_up_crc'] = json_raw['result']['up']['crc']
+	        if 'ses' in json_raw['result']['up']: my_data['xdsl_up_ses'] = json_raw['result']['up']['ses']
+	        if 'fec' in json_raw['result']['up']: my_data['xdsl_up_fec'] = json_raw['result']['up']['fec']
+	        if 'maxrate' in json_raw['result']['up']: my_data['xdsl_up_maxrate'] = json_raw['result']['up']['maxrate']
+	        if 'rtx_tx' in json_raw['result']['up']: my_data['xdsl_up_rtx_tx'] = json_raw['result']['up']['rtx_tx']
+	        if 'rtx_c' in json_raw['result']['up']: my_data['xdsl_up_rtx_c'] = json_raw['result']['up']['rtx_c']  # G.INP corrected
+	        if 'rtx_uc' in json_raw['result']['up']: my_data['xdsl_up_rtx_uc'] = json_raw['result']['up']['rtx_uc']  # G.INP uncorrected
 
     ##
     # General infos
     if s_sys:
         sys_json_raw = get_system_config(headers)
-        my_data['sys_fan_rpm'] = sys_json_raw['result']['fan_rpm']  # rpm
-        my_data['sys_temp_sw'] = sys_json_raw['result']['temp_sw']  # Temp Switch, degree Celcius
-        my_data['sys_uptime'] = sys_json_raw['result']['uptime_val']  # Uptime, in seconds
-        my_data['sys_temp_cpub'] = sys_json_raw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
-        my_data['sys_temp_cpum'] = sys_json_raw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
-        my_data['firmware_version'] = sys_json_raw['result']['firmware_version']  # Firmware version
+    	if 'result' in sys_json_raw:
+	        if 'fan_rpm' in sys_json_raw['result']:my_data['sys_fan_rpm'] = sys_json_raw['result']['fan_rpm']  # rpm
+	        if 'temp_sw' in sys_json_raw['result']:my_data['sys_temp_sw'] = sys_json_raw['result']['temp_sw']  # Temp Switch, degree Celcius
+	        if 'uptime_val' in sys_json_raw['result']:my_data['sys_uptime'] = sys_json_raw['result']['uptime_val']  # Uptime, in seconds
+	        if 'temp_cpub' in sys_json_raw['result']:my_data['sys_temp_cpub'] = sys_json_raw['result']['temp_cpub']  # Temp CPU Broadcom, degree Celcius
+	        if 'temp_cpum' in sys_json_raw['result']:my_data['sys_temp_cpum'] = sys_json_raw['result']['temp_cpum']  # Temp CPU Marvell, degree Celcius
+	        if 'firmware_version' in sys_json_raw['result']:my_data['firmware_version'] = sys_json_raw['result']['firmware_version']  # Firmware version
 
     ##
     # Switch status
     if s_switch:
         switch_json_raw = get_switch_status(headers)
-        for i in switch_json_raw['result']:
-            # 0 down, 1 up
-            my_data['switch_%s_link' % i['id']] = 0 if i['link'] == "down" else 1
-            # 0 auto, 1 10Base-T, 2 100Base-T, 3 1000Base-T
-            # In fact the duplex is appended like 10BaseT-HD, 1000BaseT-FD, 1000BaseT-FD
-            # So juse is an "in" because duplex isn't really usefull
-            if "10BaseT" in i['mode']:
-                my_data['switch_%s_mode' % i['id']] = 1
-            elif "100BaseT" in i['mode']:
-                my_data['switch_%s_mode' % i['id']] = 2
-            elif "1000BaseT" in i['mode']:
-                my_data['switch_%s_mode' % i['id']] = 3
-            else:
-                my_data['switch_%s_mode' % i['id']] = 0  # auto
+    	if 'result' in switch_json_raw:
+	        for i in switch_json_raw['result']:
+	            # 0 down, 1 up
+	            my_data['switch_%s_link' % i['id']] = 0 if i['link'] == "down" else 1
+	            # 0 auto, 1 10Base-T, 2 100Base-T, 3 1000Base-T
+	            # In fact the duplex is appended like 10BaseT-HD, 1000BaseT-FD, 1000BaseT-FD
+	            # So juse is an "in" because duplex isn't really usefull
+	            if "10BaseT" in i['mode']:
+	                my_data['switch_%s_mode' % i['id']] = 1
+	            elif "100BaseT" in i['mode']:
+	                my_data['switch_%s_mode' % i['id']] = 2
+	            elif "1000BaseT" in i['mode']:
+	                my_data['switch_%s_mode' % i['id']] = 3
+	            else:
+	                my_data['switch_%s_mode' % i['id']] = 0  # auto
 
     ##
     # Switch ports status
@@ -280,9 +285,10 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk):
     # Fetch internal disk stats
     if s_disk:
         json_raw=get_internal_disk_stats(headers)
-        my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
-        my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
-        my_data['disk_temp'] =  json_raw['result']['temp']
+	if 'result' in json_raw and 'partitions' in json_raw['result']:
+        	if 'total_bytes' in json_raw['result']['partitions'][0]:my_data['disk_total_bytes'] =  json_raw['result']['partitions'][0]['total_bytes']
+	        if 'used_bytes' in json_raw['result']['partitions'][0]:my_data['disk_used_bytes'] =  json_raw['result']['partitions'][0]['used_bytes']
+	        if 'temp' in json_raw['result']:my_data['disk_temp'] =  json_raw['result']['temp']
 
     # Switching between outputs formats 
     if args.format == 'influxdb':
